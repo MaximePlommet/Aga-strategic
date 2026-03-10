@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Diagnostic Patrimonial – AGA Strategic</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600&family=Quicksand:wght@400;500;600;700&display=swap" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #030036; }
+    input, button { font-family: 'Quicksand', sans-serif; }
+    a { text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    const C = {
+      bg: "#030036",
+      border: "#1a1872",
+      gold: "#F6CA7C",
+      goldLight: "#fad99a",
+      goldGlow: "rgba(246,202,124,0.15)",
+      text: "#f0ede8",
+      textMuted: "#9090b8",
+      textSub: "#c0bcd8",
+      error: "#e05555",
+    };
+
+    const questions = [
+      {
+        id: 1,
+        text: "Votre patrimoine immobilier est-il détenu :",
+        options: [
+          { label: "En nom propre", pts: 1 },
+          { label: "En SCI", pts: 3 },
+          { label: "Via plusieurs structures", pts: 4 },
+          { label: "Je n'ai pas d'immobilier", pts: 1 },
+        ],
+      },
+      {
+        id: 2,
+        text: "Vos biens immobiliers à travers votre portefeuille d'investissement représente environ :",
+        options: [
+          { label: "Plus de 45 %", pts: 1 },
+          { label: "Entre 30 % et 45 %", pts: 2 },
+          { label: "Entre 15 % et 30 %", pts: 3 },
+          { label: "Moins de 15 %", pts: 4 },
+          { label: "Je ne sais pas", pts: 0 },
+        ],
+      },
+      {
+        id: 3,
+        text: "Quelle est la structure principale de votre patrimoine aujourd'hui ?",
+        options: [
+          { label: "Quelques actifs acquis au fil des opportunités", pts: 1 },
+          { label: "Un portefeuille immobilier", pts: 2 },
+          { label: "Immobilier + placements financiers", pts: 3 },
+          { label: "Immobilier, placements et participations dans des sociétés", pts: 4 },
+        ],
+      },
+      {
+        id: 4,
+        text: "Comment envisagez-vous l'évolution de votre patrimoine à long terme ?",
+        options: [
+          { label: "Je n'ai pas encore vraiment défini de stratégie", pts: 0 },
+          { label: "J'ai quelques objectifs (revenus, sécurité, etc.)", pts: 2 },
+          { label: "J'ai une stratégie patrimoniale globale", pts: 3 },
+          { label: "Mon patrimoine est structuré selon une vision long terme précise", pts: 4 },
+        ],
+      },
+      {
+        id: 5,
+        text: "Votre patrimoine est piloté par :",
+        options: [
+          { label: "Moi seul", pts: 1 },
+          { label: "Mon expert-comptable", pts: 2 },
+          { label: "Plusieurs conseils", pts: 3 },
+          { label: "Une stratégie globale coordonnée", pts: 4 },
+        ],
+      },
+      {
+        id: 6,
+        text: "Votre objectif principal aujourd'hui :",
+        options: [
+          { label: "Générer plus de cash-flow", pts: 2 },
+          { label: "Réduire mes impôts", pts: 2 },
+          { label: "Structurer mon patrimoine", pts: 3 },
+          { label: "Préparer la transmission", pts: 3 },
+          { label: "Arbitrer / réorganiser mon patrimoine", pts: 4 },
+        ],
+      },
+      {
+        id: 7,
+        text: "Votre patrimoine total estimé :",
+        options: [
+          { label: "Moins de 500 k€", pts: 1 },
+          { label: "Entre 500 k€ et 1 M€", pts: 2 },
+          { label: "Entre 1 M€ et 3 M€", pts: 3 },
+          { label: "Plus de 3 M€", pts: 4 },
+        ],
+      },
+      {
+        id: 8,
+        text: "Connaissez-vous votre rendement patrimonial réel ?",
+        options: [
+          { label: "Non", pts: 0 },
+          { label: "À peu près", pts: 2 },
+          { label: "Oui", pts: 3 },
+          { label: "Oui et je l'optimise activement", pts: 4 },
+        ],
+      },
+      {
+        id: 9,
+        text: "Savez-vous combien votre patrimoine vous rapporte réellement chaque année (après impôts et charges) ?",
+        options: [
+          { label: "Je ne l'ai jamais vraiment calculé", pts: 0 },
+          { label: "J'ai une estimation globale", pts: 1 },
+          { label: "Je le sais à peu près", pts: 3 },
+          { label: "Oui, je le mesure précisément", pts: 4 },
+        ],
+      },
+      {
+        id: 10,
+        text: "Pensez-vous que votre patrimoine pourrait être mieux optimisé aujourd'hui ?",
+        options: [
+          { label: "Oui, certainement", pts: 1 },
+          { label: "Probablement", pts: 2 },
+          { label: "Je ne sais pas vraiment", pts: 1 },
+          { label: "Non, je pense qu'il est déjà très optimisé", pts: 4 },
+        ],
+      },
+    ];
+
+    const MAX_RAW = questions.reduce((acc, q) => acc + Math.max(...q.options.map(o => o.pts)), 0);
+
+    const profiles = [
+      {
+        range: [0, 40],
+        title: "Patrimoine non structuré",
+        color: "#e0855a",
+        icon: "◈",
+        message: "Votre patrimoine semble s'être construit par opportunités successives. Il possède sans doute du potentiel, mais manque encore de structure globale, de lisibilité et d'optimisation.",
+        axes: [
+          "Fiscalité potentiellement trop lourde — des arbitrages sont possibles",
+          "Absence de stratégie d'ensemble cohérente",
+          "Faible visibilité sur la performance réelle de vos actifs",
+          "Transmission peu ou pas anticipée",
+        ],
+        cta: "C'est précisément dans ces situations qu'un diagnostic stratégique apporte le plus de valeur.",
+      },
+      {
+        range: [41, 60],
+        title: "Patrimoine en construction",
+        color: "#F6CA7C",
+        icon: "◇",
+        message: "Vous avez déjà posé plusieurs bases intéressantes, mais votre patrimoine peut encore gagner en cohérence, en performance et en sécurité grâce à une stratégie plus structurée.",
+        axes: [
+          "Des arbitrages pertinents sont probablement envisageables",
+          "Optimisation fiscale et patrimoniale à affiner",
+          "Coordination des différents leviers à améliorer",
+          "Clarification des objectifs à long terme",
+        ],
+        cta: "Un accompagnement ciblé vous permettrait de franchir un palier significatif.",
+      },
+      {
+        range: [61, 80],
+        title: "Patrimoine optimisé",
+        color: "#7ab8e0",
+        icon: "◆",
+        message: "Votre patrimoine semble déjà bien construit et plusieurs fondamentaux sont en place. Un accompagnement stratégique peut toutefois révéler des leviers complémentaires pour aller plus loin.",
+        axes: [
+          "Améliorer le rendement global sur l'ensemble des actifs",
+          "Sécuriser et consolider les montages existants",
+          "Affiner votre stratégie de transmission",
+          "Consolider la vision long terme et l'allocation",
+        ],
+        cta: "Il reste des marges de progression que seule une analyse fine permet de révéler.",
+      },
+      {
+        range: [81, 100],
+        title: "Patrimoine stratégique",
+        color: "#F6CA7C",
+        icon: "✦",
+        message: "Votre patrimoine paraît piloté avec méthode et vision. Vous avez déjà une logique structurée. L'enjeu est désormais d'optimiser plus finement, de sécuriser et d'anticiper les prochaines étapes.",
+        axes: [
+          "Optimisation fine des performances et des structures",
+          "Arbitrages avancés et réallocation stratégique",
+          "Transmission et gouvernance patrimoniale",
+          "Anticipation des prochaines étapes clés",
+        ],
+        cta: "Votre niveau de maturité justifie un accompagnement de haut niveau pour préserver et amplifier vos résultats.",
+      },
+    ];
+
+    const getProfile = (score) => profiles.find(p => score >= p.range[0] && score <= p.range[1]);
+
+    const s = {
+      page: {
+        minHeight: "100vh",
+        background: C.bg,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "24px 16px",
+        fontFamily: "'Quicksand', sans-serif",
+        color: C.text,
+      },
+      card: (extra = {}) => ({
+        background: "#030036",
+        border: `1px solid ${C.border}`,
+        borderRadius: "20px",
+        padding: "40px 36px",
+        width: "100%",
+        maxWidth: "600px",
+        ...extra,
+      }),
+      goldLine: {
+        width: "48px", height: "2px",
+        background: `linear-gradient(90deg, ${C.gold}, transparent)`,
+        marginBottom: "20px",
+      },
+      h1: {
+        fontSize: "clamp(22px, 5vw, 32px)",
+        fontWeight: "400",
+        fontFamily: "'Jost', sans-serif",
+        color: C.text,
+        lineHeight: "1.3",
+        marginBottom: "16px",
+        letterSpacing: "-0.02em",
+      },
+      sub: {
+        fontSize: "15px",
+        color: C.textSub,
+        lineHeight: "1.6",
+        marginBottom: "32px",
+      },
+      goldBtn: (disabled = false) => ({
+        background: disabled ? C.border : `linear-gradient(135deg, ${C.gold}, ${C.goldLight})`,
+        color: disabled ? C.textMuted : "#030036",
+        border: "none",
+        borderRadius: "10px",
+        padding: "14px 32px",
+        fontSize: "15px",
+        fontWeight: "600",
+        cursor: disabled ? "not-allowed" : "pointer",
+        letterSpacing: "0.02em",
+        width: "100%",
+        transition: "opacity 0.2s",
+        fontFamily: "inherit",
+      }),
+      ghostBtn: {
+        background: "transparent",
+        color: C.textMuted,
+        border: `1px solid ${C.border}`,
+        borderRadius: "10px",
+        padding: "12px 24px",
+        fontSize: "14px",
+        cursor: "pointer",
+        fontFamily: "inherit",
+      },
+      optionCard: (selected) => ({
+        background: selected ? C.goldGlow : "#030036",
+        border: `1px solid ${selected ? C.gold : C.border}`,
+        borderRadius: "12px",
+        padding: "16px 20px",
+        cursor: "pointer",
+        marginBottom: "10px",
+        display: "flex",
+        alignItems: "center",
+        gap: "12px",
+        transition: "all 0.15s",
+        color: selected ? C.goldLight : C.textSub,
+        fontSize: "15px",
+      }),
+      input: (err) => ({
+        background: "#030036",
+        border: `1px solid ${err ? C.error : "#3a3a48"}`,
+        borderRadius: "10px",
+        padding: "13px 16px",
+        color: C.text,
+        fontSize: "15px",
+        width: "100%",
+        outline: "none",
+        fontFamily: "inherit",
+        boxSizing: "border-box",
+      }),
+      label: {
+        fontSize: "13px",
+        color: C.textMuted,
+        marginBottom: "6px",
+        display: "block",
+        letterSpacing: "0.05em",
+        textTransform: "uppercase",
+      },
+    };
+
+    function ProgressBar({ current, total }) {
+      const pct = Math.round((current / total) * 100);
+      return (
+        <div style={{ marginBottom: "28px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
+            <span style={{ fontSize: "12px", color: C.textMuted, letterSpacing: "0.08em" }}>QUESTION {current} / {total}</span>
+            <span style={{ fontSize: "12px", color: C.gold }}>{pct}%</span>
+          </div>
+          <div style={{ height: "3px", background: C.border, borderRadius: "2px" }}>
+            <div style={{ height: "100%", width: `${pct}%`, background: `linear-gradient(90deg, ${C.gold}, ${C.goldLight})`, borderRadius: "2px", transition: "width 0.4s ease" }} />
+          </div>
+        </div>
+      );
+    }
+
+    function Logo() {
+      return (
+        <div style={{ textAlign: "center", marginBottom: "28px" }}>
+          <div style={{ fontSize: "11px", letterSpacing: "0.25em", color: C.gold, fontFamily: "sans-serif", fontWeight: "600" }}>AGA STRATEGIC</div>
+        </div>
+      );
+    }
+
+    function Intro({ onStart }) {
+      return (
+        <div style={s.page}>
+          <div style={s.card()}>
+            <Logo />
+            <div style={s.goldLine} />
+            <h1 style={s.h1}>Quel est le niveau de performance de votre patrimoine ?</h1>
+            <p style={s.sub}>Répondez à quelques questions et découvrez en moins de 3 minutes si votre patrimoine est optimisé, sous-exploité ou stratégique.</p>
+            <p style={{ fontSize: "13px", color: C.textMuted, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "12px", fontFamily: "'Jost', sans-serif" }}>AGA Strategic c'est</p>
+            <div style={{ background: "#030036", border: `1px solid ${C.border}`, borderRadius: "12px", padding: "16px 20px", marginBottom: "28px", display: "flex", gap: "24px", flexWrap: "wrap" }}>
+              {[["23 ans", "d'expérience"], ["+2 000", "clients accompagnés"], ["+100M€", "d'actifs traités"]].map(([v, l]) => (
+                <div key={v} style={{ textAlign: "center", flex: "1", minWidth: "80px" }}>
+                  <div style={{ fontSize: "18px", color: C.gold, fontWeight: "600" }}>{v}</div>
+                  <div style={{ fontSize: "11px", color: C.textMuted, marginTop: "2px" }}>{l}</div>
+                </div>
+              ))}
+            </div>
+            <button style={s.goldBtn()} onClick={onStart}>Démarrer le diagnostic →</button>
+            <p style={{ textAlign: "center", fontSize: "12px", color: C.textMuted, marginTop: "16px" }}>🔒 Vos réponses restent strictement confidentielles · 3 minutes</p>
+          </div>
+        </div>
+      );
+    }
+
+    function Question({ q, index, total, selected, onToggle, onNext, onBack }) {
+      const hasSelection = selected.length > 0;
+      return (
+        <div style={s.page}>
+          <div style={s.card()}>
+            <Logo />
+            <ProgressBar current={index + 1} total={total} />
+            <h2 style={{ ...s.h1, fontSize: "clamp(18px, 4vw, 24px)", marginBottom: "8px" }}>{q.text}</h2>
+            <p style={{ fontSize: "12px", color: C.textMuted, marginBottom: "20px", letterSpacing: "0.04em" }}>Vous pouvez sélectionner plusieurs réponses</p>
+            <div>
+              {q.options.map((opt, i) => {
+                const isSelected = selected.includes(i);
+                return (
+                  <div key={i} style={s.optionCard(isSelected)} onClick={() => onToggle(i)}>
+                    <div style={{ width: "20px", height: "20px", borderRadius: "5px", flexShrink: 0, border: `1.5px solid ${isSelected ? C.gold : C.border}`, background: isSelected ? C.gold : "transparent", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      {isSelected && <span style={{ color: "#030036", fontSize: "13px", lineHeight: 1, fontWeight: "700" }}>✓</span>}
+                    </div>
+                    {opt.label}
+                  </div>
+                );
+              })}
+            </div>
+            <div style={{ display: "flex", gap: "12px", marginTop: "24px" }}>
+              {index > 0 && <button style={s.ghostBtn} onClick={onBack}>← Retour</button>}
+              <button style={{ ...s.goldBtn(!hasSelection), flex: 1 }} onClick={onNext} disabled={!hasSelection}>
+                {index === total - 1 ? "Voir mes résultats →" : "Question suivante →"}
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    function LeadCapture({ onSubmit, answers, score }) {
+      const [form, setForm] = useState({ prenom: "", nom: "", email: "", tel: "", rgpd: false });
+      const [errors, setErrors] = useState({});
+      const [loading, setLoading] = useState(false);
+
+      const validate = () => {
+        const e = {};
+        if (!form.prenom.trim()) e.prenom = "Champ requis";
+        if (!form.nom.trim()) e.nom = "Champ requis";
+        if (!form.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) e.email = "Email invalide";
+        if (!form.tel.trim()) e.tel = "Champ requis";
+        if (!form.rgpd) e.rgpd = "Consentement requis";
+        return e;
+      };
+
+      const handleSubmit = async () => {
+        const e = validate();
+        if (Object.keys(e).length) { setErrors(e); return; }
+        setLoading(true);
+        const reponses = questions.map((q, i) => ({
+          question: q.text,
+          reponses: answers[i].map(idx => q.options[idx].label),
+        }));
+        const profile = getProfile(score);
+        const payload = {
+          prenom: form.prenom, nom: form.nom, email: form.email, tel: form.tel,
+          score, profil: profile.title,
+          reponses: JSON.stringify(reponses),
+          date: new Date().toISOString(),
+        };
+        try {
+          await fetch("https://formspree.io/f/mojkewlg", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Accept": "application/json" },
+            body: JSON.stringify(payload),
+          });
+        } catch (err) { console.error(err); }
+        setLoading(false);
+        onSubmit(form);
+      };
+
+      const set = (k, v) => {
+        setForm(f => ({ ...f, [k]: v }));
+        setErrors(e => ({ ...e, [k]: undefined }));
+      };
+
+      return (
+        <div style={s.page}>
+          <div style={s.card()}>
+            <Logo />
+            <div style={s.goldLine} />
+            <h2 style={{ ...s.h1, fontSize: "22px" }}>Votre score patrimonial est prêt.</h2>
+            <p style={s.sub}>Entrez vos coordonnées pour découvrir votre score patrimonial personnalisé et recevoir vos résultats.</p>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px", marginBottom: "14px" }}>
+              {[["prenom", "Prénom *", "Jean"], ["nom", "Nom *", "Dupont"]].map(([k, l, ph]) => (
+                <div key={k}>
+                  <label style={s.label}>{l}</label>
+                  <input style={s.input(errors[k])} value={form[k]} onChange={e => set(k, e.target.value)} placeholder={ph} />
+                  {errors[k] && <p style={{ color: C.error, fontSize: "12px", marginTop: "4px" }}>{errors[k]}</p>}
+                </div>
+              ))}
+            </div>
+            <div style={{ marginBottom: "14px" }}>
+              <label style={s.label}>Email *</label>
+              <input style={s.input(errors.email)} value={form.email} onChange={e => set("email", e.target.value)} placeholder="jean.dupont@exemple.com" type="email" />
+              {errors.email && <p style={{ color: C.error, fontSize: "12px", marginTop: "4px" }}>{errors.email}</p>}
+            </div>
+            <div style={{ marginBottom: "20px" }}>
+              <label style={s.label}>Téléphone *</label>
+              <input style={s.input(errors.tel)} value={form.tel} onChange={e => set("tel", e.target.value)} placeholder="+33 6 00 00 00 00" type="tel" />
+              {errors.tel && <p style={{ color: C.error, fontSize: "12px", marginTop: "4px" }}>{errors.tel}</p>}
+            </div>
+            <div style={{ marginBottom: "24px" }}>
+              <label style={{ display: "flex", alignItems: "flex-start", gap: "12px", cursor: "pointer" }}>
+                <div onClick={() => set("rgpd", !form.rgpd)} style={{ width: "18px", height: "18px", borderRadius: "4px", flexShrink: 0, marginTop: "2px", border: `1.5px solid ${errors.rgpd ? C.error : form.rgpd ? C.gold : C.border}`, background: form.rgpd ? C.gold : "transparent", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
+                  {form.rgpd && <span style={{ color: "#030036", fontSize: "12px", lineHeight: 1 }}>✓</span>}
+                </div>
+                <span style={{ fontSize: "13px", color: C.textMuted, lineHeight: "1.5" }}>J'accepte que mes données soient utilisées par AGA Strategic. Aucune transmission à des tiers. *</span>
+              </label>
+              {errors.rgpd && <p style={{ color: C.error, fontSize: "12px", marginTop: "6px" }}>{errors.rgpd}</p>}
+            </div>
+            <button style={s.goldBtn(loading)} onClick={handleSubmit} disabled={loading}>
+              {loading ? "Analyse en cours…" : "Découvrir mon score patrimonial →"}
+            </button>
+            <p style={{ textAlign: "center", fontSize: "12px", color: C.textMuted, marginTop: "14px" }}>🔒 Données strictement confidentielles · Conformité RGPD</p>
+          </div>
+        </div>
+      );
+    }
+
+    function Result({ score, onRestart }) {
+      const profile = getProfile(score);
+      const r = 70, cx = 90, cy = 90;
+      const angle = (score / 100) * 180;
+      const rad = (angle - 180) * (Math.PI / 180);
+      const ex = cx + r * Math.cos(rad);
+      const ey = cy + r * Math.sin(rad);
+
+      return (
+        <div style={s.page}>
+          <div style={s.card({ maxWidth: "640px" })}>
+            <Logo />
+            <div style={{ textAlign: "center", marginBottom: "24px" }}>
+              <svg width="180" height="100" viewBox="0 0 180 100">
+                <path d={`M ${cx - r} ${cy} A ${r} ${r} 0 0 1 ${cx + r} ${cy}`} fill="none" stroke={C.border} strokeWidth="10" strokeLinecap="round" />
+                {score > 0 && <path d={`M ${cx - r} ${cy} A ${r} ${r} 0 0 1 ${ex} ${ey}`} fill="none" stroke={profile.color} strokeWidth="10" strokeLinecap="round" />}
+                <text x={cx} y={cy - 10} textAnchor="middle" fill={profile.color} style={{ fontSize: "28px", fontWeight: "700", fontFamily: "sans-serif" }}>{score}</text>
+                <text x={cx} y={cy + 8} textAnchor="middle" fill={C.textMuted} style={{ fontSize: "11px", fontFamily: "sans-serif", letterSpacing: "0.1em" }}>/ 100</text>
+              </svg>
+              <div style={{ fontSize: "11px", color: profile.color, letterSpacing: "0.2em", marginBottom: "6px" }}>{profile.icon} VOTRE PROFIL</div>
+              <h2 style={{ fontSize: "clamp(22px, 5vw, 28px)", fontWeight: "400", fontFamily: "'Jost', sans-serif", color: C.text }}>{profile.title}</h2>
+            </div>
+            <div style={{ ...s.goldLine, margin: "0 auto 20px" }} />
+            <p style={{ ...s.sub, marginBottom: "24px" }}>{profile.message}</p>
+            <div style={{ background: "#030036", border: `1px solid ${C.border}`, borderRadius: "12px", padding: "20px 24px", marginBottom: "24px" }}>
+              <div style={{ fontSize: "11px", color: C.gold, letterSpacing: "0.15em", marginBottom: "14px" }}>POINTS DE LECTURE</div>
+              {profile.axes.map((a, i) => (
+                <div key={i} style={{ display: "flex", gap: "10px", marginBottom: "10px", alignItems: "flex-start" }}>
+                  <span style={{ color: C.gold, marginTop: "2px", flexShrink: 0 }}>›</span>
+                  <span style={{ fontSize: "14px", color: C.textSub, lineHeight: "1.5" }}>{a}</span>
+                </div>
+              ))}
+            </div>
+            <p style={{ fontSize: "14px", color: C.textSub, fontStyle: "italic", marginBottom: "28px", textAlign: "center" }}>{profile.cta}</p>
+            <a href="https://www.agastrategic.com/audit-patrimonial-strategique" target="_blank" rel="noopener noreferrer" style={{ display: "block", background: `linear-gradient(135deg, ${C.gold}, ${C.goldLight})`, color: "#030036", borderRadius: "10px", padding: "15px 32px", fontSize: "15px", fontWeight: "700", textAlign: "center", letterSpacing: "0.02em", marginBottom: "12px" }}>
+              Demander une consultation offerte →
+            </a>
+            <a href="mailto:contact@aga-strategic.com" style={{ display: "block", background: "transparent", color: C.textMuted, border: `1px solid ${C.border}`, borderRadius: "10px", padding: "13px 32px", fontSize: "14px", textAlign: "center", marginBottom: "24px" }}>
+              Être recontacté par un conseiller
+            </a>
+            <button style={{ background: "none", border: "none", color: C.textMuted, fontSize: "13px", cursor: "pointer", width: "100%", fontFamily: "inherit" }} onClick={onRestart}>
+              ↺ Recommencer le diagnostic
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    function App() {
+      const [screen, setScreen] = useState("intro");
+      const [current, setCurrent] = useState(0);
+      const [answers, setAnswers] = useState(questions.map(() => []));
+      const [score, setScore] = useState(0);
+
+      const computeScore = (ans) => {
+        const raw = ans.reduce((acc, sel, i) => {
+          if (!sel.length) return acc;
+          const maxPts = Math.max(...questions[i].options.map(o => o.pts));
+          const qPts = Math.min(sel.reduce((s, idx) => s + questions[i].options[idx].pts, 0), maxPts);
+          return acc + qPts;
+        }, 0);
+        return Math.round((raw / MAX_RAW) * 100);
+      };
+
+      const toggleOption = (optIdx) => {
+        setAnswers(prev => {
+          const next = prev.map(a => [...a]);
+          const sel = next[current];
+          const pos = sel.indexOf(optIdx);
+          if (pos === -1) sel.push(optIdx); else sel.splice(pos, 1);
+          return next;
+        });
+      };
+
+      const nextQuestion = () => {
+        if (current < questions.length - 1) setCurrent(c => c + 1);
+        else { setScore(computeScore(answers)); setScreen("lead"); }
+      };
+
+      const prevQuestion = () => { if (current > 0) setCurrent(c => c - 1); };
+
+      const restart = () => {
+        setScreen("intro"); setCurrent(0);
+        setAnswers(questions.map(() => [])); setScore(0);
+      };
+
+      if (screen === "intro") return <Intro onStart={() => setScreen("quiz")} />;
+      if (screen === "quiz") return <Question q={questions[current]} index={current} total={questions.length} selected={answers[current]} onToggle={toggleOption} onNext={nextQuestion} onBack={prevQuestion} />;
+      if (screen === "lead") return <LeadCapture onSubmit={() => setScreen("result")} answers={answers} score={score} />;
+      if (screen === "result") return <Result score={score} onRestart={restart} />;
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>
