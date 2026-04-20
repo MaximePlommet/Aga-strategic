@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;600;700;900&family=Quicksand:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Quicksand',sans-serif;background:#0a0a1a;color:#fff;overflow:hidden}
+.deck{width:100vw;height:100vh;position:relative}
+.slide{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;align-items:center;padding:60px 80px;background:#030036;overflow:hidden}
+.slide.active{display:flex}
+
+/* Backgrounds */
+.slide-cover{background:linear-gradient(135deg,#030036 60%,#0a0058 100%)}
+.slide-dark{background:#030036}
+.slide-split-l{background:#030036;flex-direction:row;align-items:stretch;padding:0}
+.slide-split-r{background:#f8f7f4;flex-direction:row;align-items:stretch;padding:0}
+.slide-light{background:#f8f7f4}
+
+/* Diagonal accent */
+.diag{position:absolute;right:-10%;bottom:-15%;width:55%;height:80%;background:rgba(246,202,124,0.04);transform:skewX(-12deg);border-left:1px solid rgba(246,202,124,0.12);pointer-events:none}
+.diag2{position:absolute;left:-5%;top:-10%;width:30%;height:60%;background:rgba(177,136,88,0.04);transform:skewX(-12deg);pointer-events:none}
+
+/* Nav */
+.nav{position:fixed;bottom:32px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:20px;z-index:100}
+.nav-btn{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;width:40px;height:40px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s}
+.nav-btn:hover{background:rgba(246,202,124,0.3)}
+.nav-dots{display:flex;gap:8px}
+.dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.25);cursor:pointer;transition:all .2s}
+.dot.active{background:#F6CA7C;width:18px;border-radius:3px}
+.slide-num{font-family:'Jost',sans-serif;font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:2px;position:fixed;bottom:34px;right:48px}
+
+/* Logo header */
+.logo-bar{position:absolute;top:28px;left:48px;display:flex;align-items:center;gap:10px}
+.logo-bar svg{width:32px;height:32px}
+.logo-text{font-family:'Jost',sans-serif;font-size:13px;letter-spacing:1px;line-height:1.2}
+.logo-text .aga{color:#fff;font-weight:400;font-size:10px;letter-spacing:2px}
+.logo-text .strat{color:#F6CA7C;font-weight:700;font-size:13px;letter-spacing:1.5px}
+
+/* Gold line accent */
+.gold-line{width:48px;height:2px;background:#F6CA7C;margin-bottom:20px}
+.gold-line-sm{width:32px;height:1.5px;background:#B18858;margin-bottom:12px}
+
+/* Typography */
+h1{font-family:'Jost',sans-serif;font-size:clamp(2.2rem,5vw,3.8rem);font-weight:900;line-height:1.1;color:#fff}
+h2{font-family:'Jost',sans-serif;font-size:clamp(1.5rem,3.5vw,2.6rem);font-weight:700;line-height:1.2;color:#fff}
+h3{font-family:'Jost',sans-serif;font-size:1.1rem;font-weight:700;color:#F6CA7C;letter-spacing:.5px;text-transform:uppercase}
+p{font-family:'Quicksand',sans-serif;font-size:1rem;line-height:1.7;color:rgba(255,255,255,0.75)}
+.lead{font-size:1.15rem;color:rgba(255,255,255,0.85)}
+.gold{color:#F6CA7C}
+.dark-p{color:rgba(3,0,54,0.72);font-size:.95rem}
+.dark-h2{color:#030036}
+.dark-h3{color:#030036;font-family:'Jost',sans-serif;font-size:.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+
+/* Cards */
+.card-grid{display:grid;gap:20px;width:100%;margin-top:28px}
+.g2{grid-template-columns:1fr 1fr}
+.g3{grid-template-columns:1fr 1fr 1fr}
+.card{background:rgba(255,255,255,0.05);border:1px solid rgba(246,202,124,0.2);border-radius:12px;padding:24px;position:relative}
+.card-dark{background:#fff;border:1px solid rgba(3,0,54,0.12);border-radius:12px;padding:24px}
+.card-accent{border-left:3px solid #F6CA7C;padding-left:20px}
+.card-num{font-family:'Jost',sans-serif;font-size:2.4rem;font-weight:900;color:#F6CA7C}
+
+/* Table */
+table{width:100%;border-collapse:collapse;margin-top:20px}
+th{font-family:'Jost',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:1px;padding:10px 14px;text-align:left}
+td{font-family:'Quicksand',sans-serif;font-size:.88rem;padding:10px 14px;border-top:1px solid rgba(255,255,255,0.07)}
+.th-gold{background:rgba(246,202,124,0.15);color:#F6CA7C}
+.th-plain{background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.5)}
+.td-check{color:#F6CA7C;font-weight:700}
+.td-x{color:rgba(255,255,255,0.3)}
+
+/* Triangle logo SVG */
+.logo-svg path{fill:#fff}.logo-svg path.g{fill:#F6CA7C}
+
+/* Split layouts */
+.split-left{width:50%;background:#030036;display:flex;flex-direction:column;justify-content:center;padding:60px 48px;position:relative;overflow:hidden}
+.split-right{width:50%;background:#f0efea;display:flex;flex-direction:column;justify-content:center;padding:60px 48px}
+.split-left-sm{width:42%}.split-right-lg{width:58%}
+
+/* Tags */
+.tag{display:inline-block;background:rgba(246,202,124,0.15);color:#F6CA7C;font-size:.75rem;font-family:'Jost',sans-serif;font-weight:600;letter-spacing:1px;padding:4px 12px;border-radius:4px;margin-bottom:16px}
+.tag-dark{background:rgba(3,0,54,0.08);color:#030036}
+
+/* Triangle icon inline */
+.tri{display:inline-block;width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:10px solid #F6CA7C;margin-right:8px;vertical-align:middle}
+
+/* CTA */
+.cta-box{border:1px solid rgba(246,202,124,0.4);border-radius:12px;padding:28px 36px;text-align:center;margin-top:32px;background:rgba(246,202,124,0.05)}
+
+/* Icon circles */
+.icon-circle{width:48px;height:48px;border-radius:50%;background:rgba(246,202,124,0.12);border:1px solid rgba(246,202,124,0.3);display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:14px;flex-shrink:0}
+
+/* Pill */
+.pill{background:#F6CA7C;color:#030036;font-family:'Jost',sans-serif;font-size:.7rem;font-weight:700;letter-spacing:1px;padding:3px 10px;border-radius:20px;text-transform:uppercase}
+
+/* Connector dots timeline */
+.timeline{display:flex;align-items:flex-start;gap:0;margin-top:24px;position:relative}
+.tl-item{flex:1;text-align:center;position:relative;padding:0 8px}
+.tl-dot{width:14px;height:14px;border-radius:50%;background:#F6CA7C;margin:0 auto 12px;position:relative;z-index:2}
+.tl-line{position:absolute;top:7px;left:50%;right:-50%;height:1px;background:rgba(246,202,124,0.3);z-index:1}
+.tl-item:last-child .tl-line{display:none}
+
+/* Stat big */
+.stat-big{font-family:'Jost',sans-serif;font-size:3.5rem;font-weight:900;color:#F6CA7C;line-height:1}
+</style>
+</head>
+<body>
+<div class="deck">
+
+<!-- SLIDE 1: Cover -->
+<div class="slide slide-cover active">
+  <div class="diag"></div><div class="diag2"></div>
+  <div class="logo-bar">
+    <svg class="logo-svg" viewBox="0 0 40 40"><path d="M20 2L4 36h8l8-14 8 14h8L20 2z"/><path class="g" d="M20 20l-4 7h8l-4-7z"/></svg>
+    <div class="logo-text"><div class="aga">AGA</div><div class="strat">STRATEGIC</div></div>
+  </div>
+  <div style="max-width:700px;text-align:center">
+    <div class="tag">RAPPORT STRATÉGIQUE 2026</div>
+    <h1 style="margin-bottom:24px">L'Assurance-Vie<br/><span class="gold">Luxembourgeoise</span></h1>
+    <div class="gold-line" style="margin:0 auto 24px"></div>
+    <p class="lead">L'outil patrimonial de référence pour sécuriser, faire croître<br/>et transmettre un patrimoine d'exception.</p>
+    <div style="margin-top:40px;font-family:'Jost',sans-serif;font-size:.8rem;letter-spacing:2px;color:rgba(255,255,255,0.35)">aga-strategic.com</div>
+  </div>
+</div>
+
+<!-- SLIDE 2: Contexte -->
+<div class="slide slide-dark">
+  <div class="diag"></div>
+  <div class="logo-bar">
+    <svg class="logo-svg" viewBox="0 0 40 40"><path d="M20 2L4 36h8l8-14 8 14h8L20 2z"/><path class="g" d="M20 20l-4 7h8l-4-7z"/></svg>
+    <div class="logo-text"><div class="aga">AGA</div><div class="strat">STRATEGIC</div></div>
+  </div>
+  <div style="width:100%;max-width:900px">
+    <div class="tag">LE CONTEXTE</div>
+    <h2 style="margin-bottom:8px">Pourquoi repenser<br/>votre assurance-vie <span class="gold">aujourd'hui ?</span></h2>
+    <div class="gold-line" style="margin-top:16px"></div>
+    <div class="card-grid g3" style="margin-top:32px">
+      <div class="card card-accent">
+        <div style="font-size:2rem;margin-bottom:12px">⚠</div>
+        <h3 style="margin-bottom:10px">Incertitudes</h3>
+        <p>Pression fiscale croissante et fragilité des fonds euros français.</p>
+      </div>
+      <div class="card card-accent">
+        <div style="font-size:2rem;margin-bottom:12px">📉</div>
+        <h3 style="margin-bottom:10px">Rendements faibles</h3>
+        <p>Les contrats français plafonnent à <strong style="color:#F6CA7C">1–3 %</strong> quand le Luxembourg atteint <strong style="color:#F6CA7C">7–11 %</strong>.</p>
+      </div>
+      <div class="card card-accent">
+        <div style="font-size:2rem;margin-bottom:12px">🌍</div>
+        <h3 style="margin-bottom:10px">Mobilité accrue</h3>
+        <p>Expatriés et investisseurs internationaux cherchent un cadre flexible et sécurisé.</p>
+      </div>
+    </div>
+    <div class="cta-box" style="margin-top:24px;padding:18px 28px;text-align:left">
+      <p style="color:#F6CA7C;font-family:'Jost',sans-serif;font-weight:700;font-size:1rem">L'assurance-vie luxembourgeoise s'impose désormais comme la réponse structurelle à ces défis — accessible dès 100 000 €.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 3: Qu'est-ce que -->
+<div class="slide slide-dark">
+  <div class="diag"></div>
+  <div class="logo-bar">
+    <svg class="logo-svg" viewBox="0 0 40 40"><path d="M20 2L4 36h8l8-14 8 14h8L20 2z"/><path class="g" d="M20 20l-4 7h8l-4-7z"/></svg>
+    <div class="logo-text"><div class="aga">AGA</div><div class="strat">STRATEGIC</div></div>
+  </div>
+  <div style="width:100%;max-width:900px">
+    <div class="tag">DÉFINITION</div>
+    <h2 style="margin-bottom:8px">Qu'est-ce que l'assurance-vie<br/><span class="gold">luxembourgeoise ?</span></h2>
+    <div class="gold-line" style="margin-top:16px"></div>
+    <p class="lead" style="margin-top:16px;margin-bottom:28px">Un contrat émis par une compagnie basée au Luxembourg, régulée par le <strong style="color:#F6CA7C">Commissariat aux Assurances (CAA)</strong>. Un cadre juridique et financier extrêmement protecteur, reconnu dans toute l'Union Européenne.</p>
+    <div class="card-grid g3">
+      <div class="card" style="text-align:center">
+        <div class="icon-circle" style="margin:0 auto 14px"><span style="font-size:22px">🇫🇷</span></div>
+        <h3 style="margin-bottom:8px;text-align:center">Résidents français</h3>
+        <p style="font-size:.85rem">Souscription possible depuis la France, fiscalité française applicable.</p>
+      </div>
+      <div class="card" style="text-align:center">
+        <div class="icon-circle" style="margin:0 auto 14px"><span style="font-size:22px">✈️</span></div>
+        <h3 style="margin-bottom:8px;text-align:center">Expatriés</h3>
+        <p style="font-size:.85rem">Neutralité fiscale du Luxembourg — la fiscalité du pays de résidence s'applique sans changer de contrat.</p>
+      </div>
+      <div class="card" style="text-align:center">
+        <div class="icon-circle" style="margin:0 auto 14px"><span style="font-size:22px">🌐</span></div>
+        <h3 style="margin-bottom:8px;text-align:center">Investisseurs internationaux</h3>
+        <p style="font-size:.85rem">Architecture ouverte : ETF, Private Equity, Produits structurés, multi-devises.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4: Triangle de Sécurité -->
+<div class="slide slide-dark">
+  <div class="diag"></div>
+  <div class="logo-bar">
+    <svg class="logo-svg" viewBox="0 0 40 40"><path d="M20 2L4 36h8l8-14 8 14h8L20 2z"/><path class="g" d="M20 20l-4 7h8l-4-7z"/></svg>
+    <div class="logo-text"><div class="aga">AGA</div><div class="strat">STRATEGIC</div></div>
+  </div>
+  <div style="width:100%;max-width:900px">
+    <div class="tag">SÉCURITÉ ABSOLUE</div>
+    <h2 style="margin-bottom:8px">Le Triangle de Sécurité<br/><span class="gold">luxembourgeois</span></h2>
+    <div class="gold-line" style="margin-top:16px"></div>
+    <div style="display:flex;gap:32px;margin-top:28px;align-items:flex-start">
+      <div style="flex:1">
+        <p class="lead" style="margin-bottom:20px">Un mécanisme <strong style="color:#F6CA7C">unique en Europe</strong> impliquant trois acteurs indépendants qui protègent les actifs du client de manière absolue.</p>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="card card-accent" style="display:flex;align-items:center;gap:16px;padding:16px 20px">
+            <div class="icon-circle" style="margin:0;width:40px;height:40px;font-size:18px">🏦</div>
+            <div><h3 style="margin-bottom:3px">Compagnie d'assurance</h3><p style="font-size:.85rem">Actifs ségrégés de ses fonds propres.</p></div>
+          </div>
+          <div class="card card-accent" style="display:flex;align-items:center;gap:16px;padding:16px 20px">
+            <div class="icon-circle" style="margin:0;width:40px;height:40px;font-size:18px">🏛</div>
+            <div><h3 style="margin-bottom:3px">Banque dépositaire</h3><p style="font-size:.85rem">Actifs déposés auprès d'une banque indépendante.</p></div>
+          </div>
+          <div class="card card-accent" style="display:flex;align-items:center;gap:16px;padding:16px 20px">
+            <div class="icon-circle" style="margin:0;width:40px;height:40px;font-size:18px">⚖️</div>
+            <div><h3 style="margin-bottom:3px">Régulateur (CAA)</h3><p style="font-size:.85rem">Supervision permanente et indépendante.</p></div>
+          </div>
+        </div>
+      </div>
+      <div style="flex:0 0 280px">
+        <div class="cta-box" style="margin:0 0 16px">
+          <h3 style="margin-bottom:10px;text-align:center">Super-Privilège</h3>
+          <p style="font-size:.9rem;text-align:center">Le souscripteur est <strong style="color:#F6CA7C">créancier prioritaire absolu</strong>, supérieur à l'État, aux salariés et à tous autres créanciers.</p>
+        </div>
+        <div class="card" style="text-align:center;background:rgba(246,202,124,0.08);border-color:rgba(246,202,124,0.35)">
+          <p style="font-size:.85rem;color:#F6CA7C;font-family:'Jost',sans-serif;font-weight:700">Hors champ de la Loi Sapin II</p>
+          <p style="font-size:.82rem;margin-top:8px">Fonds disponibles même en période de crise de l'État français.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 5: Liberté d'investissement -->
+<div class="slide slide-dark">
+  <div class="diag"></div>
+  <div class="logo-bar">
+    <svg class="logo-svg" viewBox="0 0 40 40"><path d="M20 2L4 36h8l8-14 8 14h8L20 2z"/><path class="g" d="M20 20l-4 7h8l-4-7z"/></svg>
+    <div class="logo-text"><div class="aga">AGA</div><div class="strat">STRATEGIC</div></div>
+  </div>
+  <div style="width:100%;max-width:900px">
+    <div class="tag">ARCHITECTURE OUVERTE</div>
+    <h2 style="margin-bottom:8px">Une liberté d'investissement<br/><span class="gold">quasi illimitée</span></h2>
+    <div class="gold-line" style="margin-top:16px"></div>
+    <p class="lead" style="margin-top:16px;margin-bottom:28px">Le contrat s'adapte à la stratégie de l'investisseur — et non l'inverse.</p>
+    <div class="card-grid" style="grid-template-columns:repeat(3,1fr);gap:14px">
+      <div class="card" style="padding:18px;text-align:center"><div style="color:#F6CA7C;font-size:1.4rem;margin-bottom:8px">📊</div><h3 style="font-size:.8rem;margin-bottom:6px">ETF & OPCVM</h3><p style="font-size:.8rem">Accès aux fonds internationaux les plus performants.</p></div>
+      <div class="card" style="padding:18px;text-align:center"><div style="color:#F6CA7C;font-size:1.4rem;margin-bottom:8px">🏢</div><h3 style="font-size:.8rem;margin-bottom:6px">Private Equity</h3><p style="font-size:.8rem">Accès direct aux meilleures opportunités non cotées.</p></div>
+      <div class="card" style="padding:18px;text-align:center"><div style="color:#F6CA7C;font-size:1.4rem;margin-bottom:8px">🏗</div><h3 style="font-size:.8rem;margin-bottom:6px">Immobilier</h3><p style="font-size:.8rem">Fonds immobiliers intégrés dans le contrat.</p></div>
+      <div class="card" style="padding:18px;text-align:center"><div style="color:#F6CA7C;font-size:1.4rem;margin-bottom:8px">📐</div><h3 style="font-size:.8rem;margin-bottom:6px">Produits structurés</h3><p style="font-size:.8rem">Solutions sur-mesure adaptées au profil de risque.</p></div>
+      <div class="card" style="padding:18px;text-align:center"><div style="color:#F6CA7C;font-size:1.4rem;margin-bottom:8px">💳</div><h3 style="font-size:.8rem;margin-bottom:6px">Dette privée</h3><p style="font-size:.8rem">Rendements attractifs sur des créances sélectionnées.</p></div>
+      <div class="card" style="padding:18px;text-align:center;background:rgba(246,202,124,0.1);border-color:rgba(246,202,124,0.4)"><div style="color:#F6CA7C;font-size:1.4rem;margin-bottom:8px">💱</div><h3 style="font-size:.8rem;margin-bottom:6px">Multi-devises</h3><p style="font-size:.8rem">EUR, USD, CHF et autres devises internationales.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 6: Comparaison -->
+<div class="slide slide-dark">
+  <div class="diag"></div>
+  <div class="logo-bar">
+    <svg class="logo-svg" viewBox="0 0 40 40"><path d="M20 2L4 36h8l8-14 8 14h8L20 2z"/><path class="g" d="M20 20l-4 7h8l-4-7z"/></svg>
+    <div class="logo-text"><div class="aga">AGA</div><div class="strat">STRATEGIC</div></div>
+  </div>
+  <div style="width:100%;max-width:900px">
+    <div class="tag">COMPARAISON</div>
+    <h2 style="margin-bottom:8px">AV Française <span class="gold">vs</span> AV Luxembourgeoise</h2>
+    <div class="gold-line" style="margin-top:16px"></div>
+    <table style="margin-top:20px">
+      <thead>
+        <tr>
+          <th style="background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.5);width:30%">Critère</th>
+          <th class="th-plain" style="width:35%">🇫🇷 Assurance-vie française</th>
+          <th class="th-gold" style="width:35%">🇱🇺 Assurance-vie luxembourgeoise</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td style="color:rgba(255,255,255,0.6);font-size:.85rem">Sécurité des actifs</td><td style="font-size:.85rem;color:rgba(255,255,255,0.55)">Fonds de garantie plafonné à 100 000 €</td><td style="font-size:.85rem" class="td-check">✦ Ségrégation + super-privilège illimité</td></tr>
+        <tr><td style="color:rgba(255,255,255,0.6);font-size:.85rem">Rendement</td><td style="font-size:.85rem;color:rgba(255,255,255,0.55)">1 % – 3 %</td><td style="font-size:.85rem" class="td-check">✦ 7 % – 11 %</td></tr>
+        <tr><td style="color:rgba(255,255,255,0.6);font-size:.85rem">Liberté d'investissement</td><td style="font-size:.85rem;color:rgba(255,255,255,0.55)">Limitée par l'assureur</td><td style="font-size:.85rem" class="td-check">✦ Quasi totale</td></tr>
+        <tr><td style="color:rgba(255,255,255,0.6);font-size:.85rem">Fonds dédiés</td><td style="font-size:.85rem;color:rgba(255,255,255,0.55)">Rarement accessibles</td><td style="font-size:.85rem" class="td-check">✦ Standard clients premium</td></tr>
+        <tr><td style="color:rgba(255,255,255,0.6);font-size:.85rem">Multi-devises</td><td style="font-size:.85rem;color:rgba(255,255,255,0.55)">Très limité</td><td style="font-size:.85rem" class="td-check">✦ EUR, USD, CHF…</td></tr>
+        <tr><td style="color:rgba(255,255,255,0.6);font-size:.85rem">Expatriation</td><td style="font-size:.85rem;color:rgba(255,255,255,0.55)">Contraignante</td><td style="font-size:.85rem" class="td-check">✦ Totalement fluide</td></tr>
+        <tr><td style="color:rgba(255,255,255,0.6);font-size:.85rem">Produits non cotés</td><td style="font-size:.85rem;color:rgba(255,255,255,0.55)">Très restreints</td><td style="font-size:.85rem" class="td-check">✦ Largement accessibles</td></tr>
+        <tr><td style="color:rgba(255,255,255,0.6);font-size:.85rem">Loi Sapin II</td><td style="font-size:.85rem;color:rgba(255,255,255,0.55)">Applicable – blocages possibles</td><td style="font-size:.85rem" class="td-check">✦ Hors champ</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- SLIDE 7: Profils -->
+<div class="slide slide-dark">
+  <div class="diag"></div>
+  <div class="logo-bar">
+    <svg class="logo-svg" viewBox="0 0 40 40"><path d="M20 2L4 36h8l8-14 8 14h8L20 2z"/><path class="g" d="M20 20l-4 7h8l-4-7z"/></svg>
+    <div class="logo-text"><div class="aga">AGA</div><div class="strat">STRATEGIC</div></div>
+  </div>
+  <div style="width:100%;max-width:900px">
+    <div class="tag">PROFILS CIBLES</div>
+    <h2 style="margin-bottom:8px">À qui s'adresse<br/><span class="gold">ce produit ?</span></h2>
+    <div class="gold-line" style="margin-top:16px"></div>
+    <div style="display:flex;gap:28px;margin-top:24px">
+      <div style="flex:1;display:flex;flex-direction:column;gap:12px">
+        <div class="card" style="display:flex;align-items:center;gap:16px;padding:14px 18px"><span style="font-size:1.5rem">👔</span><div><h3 style="margin-bottom:2px">Entrepreneurs & dirigeants</h3><p style="font-size:.83rem">Optimisation de la trésorerie excédentaire et structuration sociétaire.</p></div></div>
+        <div class="card" style="display:flex;align-items:center;gap:16px;padding:14px 18px"><span style="font-size:1.5rem">🏠</span><div><h3 style="margin-bottom:2px">Investisseurs immobiliers</h3><p style="font-size:.83rem">Fort capital à placer avec diversification vers les actifs financiers.</p></div></div>
+        <div class="card" style="display:flex;align-items:center;gap:16px;padding:14px 18px"><span style="font-size:1.5rem">👨‍👩‍👧</span><div><h3 style="margin-bottom:2px">Familles fortunées</h3><p style="font-size:.83rem">Protection, transmission optimisée et vision multi-générationnelle.</p></div></div>
+        <div class="card" style="display:flex;align-items:center;gap:16px;padding:14px 18px"><span style="font-size:1.5rem">✈️</span><div><h3 style="margin-bottom:2px">Expatriés & futurs expatriés</h3><p style="font-size:.83rem">Continuité juridique et financière sans changement de contrat.</p></div></div>
+        <div class="card" style="display:flex;align-items:center;gap:16px;padding:14px 18px"><span style="font-size:1.5rem">📈</span><div><h3 style="margin-bottom:2px">Accès au Private Equity</h3><p style="font-size:.83rem">Profils souhaitant intégrer la dette privée et le non-coté dans leur stratégie.</p></div></div>
+      </div>
+      <div style="flex:0 0 240px;display:flex;flex-direction:column;gap:14px">
+        <div class="cta-box" style="margin:0;flex:1;display:flex;flex-direction:column;justify-content:center">
+          <h3 style="text-align:center;margin-bottom:12px">Capital d'accès</h3>
+          <div class="stat-big" style="text-align:center">100 K€</div>
+          <p style="font-size:.83rem;text-align:center;margin-top:8px">Solutions disponibles à partir de 100 000 €</p>
+          <div style="height:1px;background:rgba(246,202,124,0.2);margin:14px 0"></div>
+          <p style="font-size:.83rem;text-align:center;color:rgba(255,255,255,0.5)">Prend tout son sens au-delà de</p>
+          <div class="stat-big" style="text-align:center;font-size:2rem">500 K€</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 8: Neutralité fiscale -->
+<div class="slide slide-dark">
+  <div class="diag"></div>
+  <div class="logo-bar">
+    <svg class="logo-svg" viewBox="0 0 40 40"><path d="M20 2L4 36h8l8-14 8 14h8L20 2z"/><path class="g" d="M20 20l-4 7h8l-4-7z"/></svg>
+    <div class="logo-text"><div class="aga">AGA</div><div class="strat">STRATEGIC</div></div>
+  </div>
+  <div style="width:100%;max-width:900px">
+    <div class="tag">FISCALITÉ & MOBILITÉ</div>
+    <h2 style="margin-bottom:8px">Neutralité fiscale &<br/><span class="gold">mobilité internationale</span></h2>
+    <div class="gold-line" style="margin-top:16px"></div>
+    <div style="display:flex;gap:24px;margin-top:28px">
+      <div style="flex:1">
+        <div class="card" style="margin-bottom:16px;background:rgba(246,202,124,0.07);border-color:rgba(246,202,124,0.35)">
+          <h3 style="margin-bottom:10px">Principe clé</h3>
+          <p>L'assurance-vie luxembourgeoise est <strong style="color:#F6CA7C">fiscalement neutre au Luxembourg</strong>. La fiscalité applicable est celle du pays de résidence du souscripteur — sans changement de contrat en cas de déménagement.</p>
+        </div>
+        <div class="card">
+          <h3 style="margin-bottom:10px">Transmission optimisée</h3>
+          <p style="font-size:.9rem">L'enveloppe assurance-vie permet une transmission patrimoniale hors succession avec des avantages fiscaux considérables sur le long terme.</p>
+        </div>
+      </div>
+      <div style="flex:1">
+        <h3 style="margin-bottom:16px;color:rgba(255,255,255,0.6)">Avantages pour les expatriés</h3>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;align-items:center;gap:14px;padding:14px;border-left:2px solid #F6CA7C;background:rgba(255,255,255,0.03);border-radius:0 8px 8px 0"><span class="td-check" style="font-size:1.2rem;flex-shrink:0">✦</span><p style="font-size:.88rem">Pas de rachat forcé en cas de départ à l'étranger</p></div>
+          <div style="display:flex;align-items:center;gap:14px;padding:14px;border-left:2px solid #F6CA7C;background:rgba(255,255,255,0.03);border-radius:0 8px 8px 0"><span class="td-check" style="font-size:1.2rem;flex-shrink:0">✦</span><p style="font-size:.88rem">Pas de nouvelle souscription à chaque changement de pays</p></div>
+          <div style="display:flex;align-items:center;gap:14px;padding:14px;border-left:2px solid #F6CA7C;background:rgba(255,255,255,0.03);border-radius:0 8px 8px 0"><span class="td-check" style="font-size:1.2rem;flex-shrink:0">✦</span><p style="font-size:.88rem">Continuité juridique et financière totale</p></div>
+          <div style="display:flex;align-items:center;gap:14px;padding:14px;border-left:2px solid #F6CA7C;background:rgba(255,255,255,0.03);border-radius:0 8px 8px 0"><span class="td-check" style="font-size:1.2rem;flex-shrink:0">✦</span><p style="font-size:.88rem">Droits d'entrée négociés : entre 0 % et 1 %</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 9: AGA Strategic -->
+<div class="slide slide-dark">
+  <div class="diag"></div>
+  <div class="logo-bar">
+    <svg class="logo-svg" viewBox="0 0 40 40"><path d="M20 2L4 36h8l8-14 8 14h8L20 2z"/><path class="g" d="M20 20l-4 7h8l-4-7z"/></svg>
+    <div class="logo-text"><div class="aga">AGA</div><div class="strat">STRATEGIC</div></div>
+  </div>
+  <div style="width:100%;max-width:900px">
+    <div class="tag">NOTRE APPROCHE</div>
+    <h2 style="margin-bottom:8px">Le positionnement<br/><span class="gold">AGA Strategic</span></h2>
+    <div class="gold-line" style="margin-top:16px"></div>
+    <div style="display:flex;gap:24px;margin-top:24px;align-items:flex-start">
+      <div style="flex:1">
+        <p class="lead" style="margin-bottom:20px">Nous utilisons l'assurance-vie luxembourgeoise comme un <strong style="color:#F6CA7C">véritable socle patrimonial</strong>, intégré à une vision long terme.</p>
+        <div class="timeline">
+          <div class="tl-item"><div class="tl-dot"></div><div class="tl-line"></div><h3 style="font-size:.75rem;text-align:center">Analyse patrimoniale</h3><p style="font-size:.78rem;text-align:center;margin-top:6px">Audit approfondi de votre situation</p></div>
+          <div class="tl-item"><div class="tl-dot"></div><div class="tl-line"></div><h3 style="font-size:.75rem;text-align:center">Structuration sur-mesure</h3><p style="font-size:.78rem;text-align:center;margin-top:6px">Contrat adapté à vos objectifs</p></div>
+          <div class="tl-item"><div class="tl-dot"></div><div class="tl-line"></div><h3 style="font-size:.75rem;text-align:center">Sélection partenaires</h3><p style="font-size:.78rem;text-align:center;margin-top:6px">Experts luxembourgeois triés sur le volet</p></div>
+          <div class="tl-item"><div class="tl-dot"></div><h3 style="font-size:.75rem;text-align:center">Coordination globale</h3><p style="font-size:.78rem;text-align:center;margin-top:6px">Avocats fiscalistes & gestionnaires</p></div>
+        </div>
+      </div>
+      <div style="flex:0 0 260px;display:flex;flex-direction:column;gap:12px">
+        <div class="card" style="background:rgba(246,202,124,0.08);border-color:rgba(246,202,124,0.3)"><div class="card-num">2 000+</div><p style="font-size:.85rem;color:rgba(255,255,255,0.6)">clients accompagnés</p></div>
+        <div class="card" style="background:rgba(246,202,124,0.08);border-color:rgba(246,202,124,0.3)"><div class="card-num">100 M€</div><p style="font-size:.85rem;color:rgba(255,255,255,0.6)">volume d'affaires traités</p></div>
+        <div class="card" style="background:rgba(246,202,124,0.08);border-color:rgba(246,202,124,0.3)"><div class="card-num">+22 %</div><p style="font-size:.85rem;color:rgba(255,255,255,0.6)">croissance annuelle</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 10: CTA -->
+<div class="slide slide-cover">
+  <div class="diag"></div><div class="diag2"></div>
+  <div class="logo-bar">
+    <svg class="logo-svg" viewBox="0 0 40 40"><path d="M20 2L4 36h8l8-14 8 14h8L20 2z"/><path class="g" d="M20 20l-4 7h8l-4-7z"/></svg>
+    <div class="logo-text"><div class="aga">AGA</div><div class="strat">STRATEGIC</div></div>
+  </div>
+  <div style="max-width:700px;text-align:center">
+    <div class="tag">PASSEZ À L'ACTION</div>
+    <h2 style="margin-bottom:16px;font-size:2rem">Êtes-vous satisfait des rendements<br/>et de la sécurité de votre AV française ?</h2>
+    <div class="gold-line" style="margin:0 auto 24px"></div>
+    <p class="lead" style="margin-bottom:32px">Prenez en main votre patrimoine.<br/>Faites-vous accompagner sur le long terme.</p>
+    <div style="display:flex;gap:20px;justify-content:center;flex-wrap:wrap">
+      <div class="cta-box" style="flex:1;min-width:200px;margin:0">
+        <div style="font-size:1.3rem;margin-bottom:8px">✉</div>
+        <p style="font-size:.8rem;color:rgba(255,255,255,0.5);margin-bottom:4px;font-family:'Jost',sans-serif;letter-spacing:1px;text-transform:uppercase">E-mail</p>
+        <p style="color:#F6CA7C;font-family:'Jost',sans-serif;font-weight:600;font-size:.95rem">contact@aga-strategic.com</p>
+      </div>
+      <div class="cta-box" style="flex:1;min-width:200px;margin:0">
+        <div style="font-size:1.3rem;margin-bottom:8px">📞</div>
+        <p style="font-size:.8rem;color:rgba(255,255,255,0.5);margin-bottom:4px;font-family:'Jost',sans-serif;letter-spacing:1px;text-transform:uppercase">Téléphone</p>
+        <p style="color:#F6CA7C;font-family:'Jost',sans-serif;font-weight:600;font-size:.95rem">+33 6 95 96 89 71</p>
+      </div>
+    </div>
+    <div style="margin-top:32px;font-family:'Jost',sans-serif;font-size:.78rem;letter-spacing:2px;color:rgba(255,255,255,0.25)">DOCUMENT CONFIDENTIEL — RÉSERVÉ AUX CLIENTS PREMIUM AGA STRATEGIC</div>
+  </div>
+</div>
+
+</div>
+
+<!-- Navigation -->
+<nav class="nav">
+  <button class="nav-btn" id="prev" onclick="go(-1)">‹</button>
+  <div class="nav-dots" id="dots"></div>
+  <button class="nav-btn" id="next" onclick="go(1)">›</button>
+</nav>
+<div class="slide-num" id="snum"></div>
+
+<script>
+const slides=document.querySelectorAll('.slide');
+const dotsEl=document.getElementById('dots');
+const snum=document.getElementById('snum');
+let cur=0;
+slides.forEach((_,i)=>{const d=document.createElement('div');d.className='dot'+(i===0?' active':'');d.onclick=()=>goTo(i);dotsEl.appendChild(d)});
+function upd(){document.querySelectorAll('.dot').forEach((d,i)=>d.className='dot'+(i===cur?' active':''));snum.textContent=(cur+1).toString().padStart(2,'0')+' / '+slides.length}
+function goTo(n){slides[cur].classList.remove('active');cur=Math.max(0,Math.min(n,slides.length-1));slides[cur].classList.add('active');upd()}
+function go(d){goTo(cur+d)}
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowDown')go(1);if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(-1)});
+upd();
+</script>
+</body>
+</html>
