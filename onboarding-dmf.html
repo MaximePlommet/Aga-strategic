@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guide Onboarding – Débarras Maison France</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Poppins',sans-serif;background:#f5f7fa;color:#1a1a1a;padding:1rem;}
+.dmf{max-width:720px;margin:0 auto;}
+.hero{background:#2694ee;border-radius:16px;padding:2rem;color:white;display:flex;align-items:center;gap:1.5rem;margin-bottom:1.5rem;}
+.hero-logo{width:64px;height:64px;background:white;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.hero-logo span{font-size:22px;font-weight:700;color:#2694ee;}
+.hero h1{font-size:20px;font-weight:700;margin-bottom:4px;}
+.hero p{font-size:13px;opacity:.85;line-height:1.5;}
+.nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.5rem;}
+.nav-btn{font-family:'Poppins',sans-serif;font-size:12px;font-weight:500;padding:6px 14px;border-radius:20px;border:1.5px solid #2694ee;color:#2694ee;background:transparent;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.nav-btn:hover{background:#e8f4fd;}
+.nav-btn.active{background:#2694ee;color:white;}
+.section{display:none;}.section.active{display:block;}
+.card{background:white;border:0.5px solid #e0e0e0;border-radius:14px;padding:1.25rem;margin-bottom:1rem;}
+.card-title{font-size:15px;font-weight:600;color:#2694ee;margin-bottom:.75rem;display:flex;align-items:center;gap:8px;}
+.value-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:1rem;}
+.value-card{background:#f5f7fa;border-radius:12px;padding:1rem;text-align:center;}
+.value-icon{font-size:26px;color:#f4bc33;margin-bottom:6px;}
+.value-label{font-size:13px;font-weight:600;margin-bottom:4px;}
+.value-desc{font-size:11px;color:#666;line-height:1.5;}
+.step-list{display:flex;flex-direction:column;gap:10px;}
+.step{display:flex;align-items:flex-start;gap:12px;}
+.step-num{width:30px;height:30px;border-radius:50%;background:#2694ee;color:white;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.step-title{font-size:13px;font-weight:600;}
+.step-desc{font-size:12px;color:#666;margin-top:2px;line-height:1.5;}
+.badge{display:inline-block;background:#fff3cd;color:#b8860b;border-radius:6px;font-size:11px;font-weight:600;padding:2px 8px;margin-top:4px;}
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+th{background:#2694ee;color:white;padding:8px 10px;text-align:left;font-weight:600;}
+td{padding:8px 10px;border-bottom:0.5px solid #e0e0e0;}
+tr:last-child td{border-bottom:none;}
+tr:nth-child(even) td{background:#f5f7fa;}
+.price{font-weight:600;color:#2694ee;}
+.rule-list{display:flex;flex-direction:column;gap:8px;}
+.rule{display:flex;align-items:flex-start;gap:10px;padding:10px;border-radius:10px;}
+.rule.ok{background:#eafaf1;}.rule.no{background:#fdecea;}
+.rule i{font-size:18px;flex-shrink:0;margin-top:1px;}
+.rule.ok i{color:#1a9e5e;}.rule.no i{color:#d93025;}
+.rule p{font-size:12px;line-height:1.5;}
+.footer{text-align:center;margin-top:1.5rem;padding:1rem;}
+.footer a{color:#2694ee;font-size:13px;font-weight:500;text-decoration:none;}
+.yellow-bar{height:4px;background:#f4bc33;border-radius:2px;margin:.75rem auto;width:60px;}
+.tagline{font-size:12px;color:#888;margin-top:4px;}
+.checklist-item{display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;cursor:pointer;transition:background .15s;}
+.cb{width:22px;height:22px;border-radius:6px;border:2px solid #2694ee;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;}
+@media(max-width:480px){
+  .nav{overflow-x:auto;flex-wrap:nowrap;padding-bottom:6px;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+  .nav::-webkit-scrollbar{display:none;}
+  .hero{flex-direction:column;text-align:center;padding:1.25rem;}
+  .hero h1{font-size:16px;}
+  th,td{padding:6px 7px;font-size:11px;}
+}
+</style>
+</head>
+<body>
+<div class="dmf">
+  <div class="hero">
+    <div class="hero-logo"><span>DMF</span></div>
+    <div><h1>Bienvenue chez Débarras Maison France 👋</h1><p>Votre guide complet pour démarrer dans le réseau DMF — simple, clair et opérationnel.</p></div>
+  </div>
+  <div class="nav">
+    <button class="nav-btn active" onclick="showSection('vision',this)">Notre vision</button>
+    <button class="nav-btn" onclick="showSection('valeurs',this)">Valeurs</button>
+    <button class="nav-btn" onclick="showSection('process',this)">Process</button>
+    <button class="nav-btn" onclick="showSection('tarifs',this)">Tarifs</button>
+    <button class="nav-btn" onclick="showSection('regles',this)">Règles</button>
+    <button class="nav-btn" onclick="showSection('checklist',this)">Checklist</button>
+  </div>
+
+  <!-- VISION -->
+  <div id="vision" class="section active">
+    <div class="card">
+      <div class="card-title"><i class="ti ti-building"></i> Qui sommes-nous ?</div>
+      <p style="font-size:13px;color:#555;line-height:1.7;">Débarras Maison France structure et professionnalise le marché du débarras en France autour d'une marque nationale forte et d'un réseau de partenaires de confiance. Notre ambition : vous offrir un flux régulier de missions qualifiées pour développer durablement votre activité.</p>
+    </div>
+    <div class="card">
+      <div class="card-title"><i class="ti ti-speakerphone"></i> Ce que DMF fait pour vous</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;">
+        <div style="background:#f5f7fa;border-radius:10px;padding:10px;font-size:12px;display:flex;align-items:center;gap:8px;"><i class="ti ti-speakerphone" style="color:#2694ee;font-size:18px;"></i><span>Marketing & publicité</span></div>
+        <div style="background:#f5f7fa;border-radius:10px;padding:10px;font-size:12px;display:flex;align-items:center;gap:8px;"><i class="ti ti-antenna" style="color:#2694ee;font-size:18px;"></i><span>Génération de leads</span></div>
+        <div style="background:#f5f7fa;border-radius:10px;padding:10px;font-size:12px;display:flex;align-items:center;gap:8px;"><i class="ti ti-file-invoice" style="color:#2694ee;font-size:18px;"></i><span>Envoi des devis</span></div>
+        <div style="background:#f5f7fa;border-radius:10px;padding:10px;font-size:12px;display:flex;align-items:center;gap:8px;"><i class="ti ti-settings" style="color:#2694ee;font-size:18px;"></i><span>Gestion administrative</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><i class="ti ti-user-check"></i> Votre rôle en tant que partenaire</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;">
+        <div style="background:#f5f7fa;border-radius:10px;padding:10px;font-size:12px;display:flex;align-items:center;gap:8px;"><i class="ti ti-phone-call" style="color:#f4bc33;font-size:18px;"></i><span>Contact & visite client</span></div>
+        <div style="background:#f5f7fa;border-radius:10px;padding:10px;font-size:12px;display:flex;align-items:center;gap:8px;"><i class="ti ti-calculator" style="color:#f4bc33;font-size:18px;"></i><span>Chiffrage technique</span></div>
+        <div style="background:#f5f7fa;border-radius:10px;padding:10px;font-size:12px;display:flex;align-items:center;gap:8px;"><i class="ti ti-truck" style="color:#f4bc33;font-size:18px;"></i><span>Réalisation du débarras</span></div>
+        <div style="background:#f5f7fa;border-radius:10px;padding:10px;font-size:12px;display:flex;align-items:center;gap:8px;"><i class="ti ti-star" style="color:#f4bc33;font-size:18px;"></i><span>Respect des standards DMF</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VALEURS -->
+  <div id="valeurs" class="section">
+    <div class="value-grid">
+      <div class="value-card"><div class="value-icon"><i class="ti ti-award"></i></div><div class="value-label">Professionnalisme</div><div class="value-desc">Chaque intervention reflète une image sérieuse et rassurante pour le client.</div></div>
+      <div class="value-card"><div class="value-icon"><i class="ti ti-bolt"></i></div><div class="value-label">Réactivité</div><div class="value-desc">Succession, vente, déménagement… les situations sont souvent urgentes. La rapidité est clé.</div></div>
+      <div class="value-card"><div class="value-icon"><i class="ti ti-heart"></i></div><div class="value-label">Respect du client</div><div class="value-desc">Courtoisie, discrétion et respect des lieux sont non négociables.</div></div>
+      <div class="value-card"><div class="value-icon"><i class="ti ti-eye"></i></div><div class="value-label">Transparence</div><div class="value-desc">Un modèle économique clair et équilibré entre DMF, les partenaires et les clients.</div></div>
+      <div class="value-card"><div class="value-icon"><i class="ti ti-leaf"></i></div><div class="value-label">Valorisation & écologie</div><div class="value-desc">Recyclage et valorisation des objets, pour des pratiques responsables.</div></div>
+    </div>
+  </div>
+
+  <!-- PROCESS -->
+  <div id="process" class="section">
+    <div class="card">
+      <div class="card-title"><i class="ti ti-route"></i> Les 6 étapes d'une mission</div>
+      <div class="step-list">
+        <div class="step"><div class="step-num">1</div><div><div class="step-title">Réception du lead</div><div class="step-desc">DMF reçoit, qualifie et vous transmet la demande sur votre zone.</div></div></div>
+        <div class="step"><div class="step-num">2</div><div><div class="step-title">Prise de contact client</div><div class="step-desc">Vous contactez le client dans les meilleurs délais.</div><div class="badge">⏱ Délai max : 2h ouvrées</div></div></div>
+        <div class="step"><div class="step-num">3</div><div><div class="step-title">Visite sur place</div><div class="step-desc">Évaluation du volume, des contraintes et estimation du coût réel.</div></div></div>
+        <div class="step"><div class="step-num">4</div><div><div class="step-title">Transmission du chiffrage</div><div class="step-desc">Montant HT, contraintes éventuelles et délai d'intervention transmis à DMF.</div><div class="badge">⏱ Délai max : 12h après la visite</div></div></div>
+        <div class="step"><div class="step-num">5</div><div><div class="step-title">Envoi du devis</div><div class="step-desc">Le devis officiel est envoyé uniquement par DMF.</div></div></div>
+        <div class="step"><div class="step-num">6</div><div><div class="step-title">Validation & intervention</div><div class="step-desc">Mission confirmée, date fixée, vous réalisez la prestation.</div></div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><i class="ti ti-checklist"></i> Standards qualité obligatoires</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:6px;font-size:12px;">
+        <div style="display:flex;align-items:center;gap:6px;"><i class="ti ti-check" style="color:#1a9e5e;"></i> Ponctualité</div>
+        <div style="display:flex;align-items:center;gap:6px;"><i class="ti ti-check" style="color:#1a9e5e;"></i> Présentation soignée</div>
+        <div style="display:flex;align-items:center;gap:6px;"><i class="ti ti-check" style="color:#1a9e5e;"></i> Respect des lieux</div>
+        <div style="display:flex;align-items:center;gap:6px;"><i class="ti ti-check" style="color:#1a9e5e;"></i> Protection des parties communes</div>
+        <div style="display:flex;align-items:center;gap:6px;"><i class="ti ti-check" style="color:#1a9e5e;"></i> Lieux laissés propres</div>
+        <div style="display:flex;align-items:center;gap:6px;"><i class="ti ti-check" style="color:#1a9e5e;"></i> Communication professionnelle</div>
+        <div style="display:flex;align-items:center;gap:6px;"><i class="ti ti-check" style="color:#1a9e5e;"></i> Conformité réglementation déchets</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TARIFS -->
+  <div id="tarifs" class="section">
+    <div class="card">
+      <div class="card-title"><i class="ti ti-coins"></i> Grille tarifaire partenaire</div>
+      <p style="font-size:12px;color:#555;margin-bottom:1rem;line-height:1.6;">Frais réseau fixes + commission variable. Un modèle gagnant-gagnant conçu pour préserver votre compétitivité.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Montant HT mission</th><th>Frais réseau DMF</th><th>Commission</th></tr></thead>
+          <tbody>
+            <tr><td>0 € – 499 €</td><td class="price">50 €</td><td>0 %</td></tr>
+            <tr><td>500 € – 999 €</td><td class="price">75 €</td><td>5 %</td></tr>
+            <tr><td>1 000 € – 1 499 €</td><td class="price">100 €</td><td>5 %</td></tr>
+            <tr><td>1 500 € – 2 499 €</td><td class="price">150 €</td><td>5 %</td></tr>
+            <tr><td>2 500 € – 3 999 €</td><td class="price">200 €</td><td>5 %</td></tr>
+            <tr><td>4 000 € et plus</td><td class="price">250 €</td><td>5 % plafonné</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size:11px;color:#888;margin-top:.75rem;">ℹ️ Les conditions peuvent évoluer chaque année selon le marché et les coûts d'acquisition.</p>
+    </div>
+  </div>
+
+  <!-- RÈGLES -->
+  <div id="regles" class="section">
+    <div class="card">
+      <div class="card-title"><i class="ti ti-shield-check"></i> Ce qui est attendu de vous</div>
+      <div class="rule-list">
+        <div class="rule ok"><i class="ti ti-circle-check"></i><p>Être fiable, sérieux et réactif à chaque mission.</p></div>
+        <div class="rule ok"><i class="ti ti-circle-check"></i><p>Respecter les délais de contact et de transmission du chiffrage.</p></div>
+        <div class="rule ok"><i class="ti ti-circle-check"></i><p>Adopter une attitude professionnelle et soignée avec les clients.</p></div>
+        <div class="rule ok"><i class="ti ti-circle-check"></i><p>Appliquer les bonnes pratiques environnementales lors de chaque débarras.</p></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:#d93025;"><i class="ti ti-ban"></i> Interdictions importantes</div>
+      <div class="rule-list">
+        <div class="rule no"><i class="ti ti-circle-x"></i><p>Contourner le réseau DMF ou récupérer directement des clients du réseau.</p></div>
+        <div class="rule no"><i class="ti ti-circle-x"></i><p>Transmettre des devis sans validation préalable de DMF.</p></div>
+        <div class="rule no"><i class="ti ti-circle-x"></i><p>Utiliser la marque Débarras Maison France sans autorisation.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHECKLIST -->
+  <div id="checklist" class="section">
+    <div class="card">
+      <div class="card-title"><i class="ti ti-list-check"></i> Checklist de démarrage</div>
+      <div id="cl"></div>
+      <div style="margin-top:1rem;background:#f5f7fa;border-radius:10px;padding:10px;text-align:center;">
+        <span style="font-size:13px;font-weight:600;color:#2694ee;" id="pt">0 / 7 étapes complétées</span>
+        <div style="height:6px;background:#e0e0e0;border-radius:3px;margin-top:6px;overflow:hidden;">
+          <div id="pb" style="height:100%;background:#2694ee;border-radius:3px;width:0%;transition:width .3s;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="yellow-bar"></div>
+    <a href="https://www.debarrasmaisonfrance.fr/" target="_blank">www.debarrasmaisonfrance.fr</a>
+    <div class="tagline">Bienvenue dans l'aventure DMF — construisons ensemble quelque chose de grand.</div>
+  </div>
+</div>
+
+<script>
+const checks = [
+  "J'ai lu et compris le fonctionnement du réseau DMF",
+  "Je connais mon délai de contact client (2h ouvrées max)",
+  "Je connais le délai de transmission du chiffrage (12h max)",
+  "J'ai pris connaissance de la grille tarifaire partenaire",
+  "Je m'engage à respecter les standards qualité DMF",
+  "Je m'engage à ne pas contourner le réseau",
+  "Je suis prêt à réaliser ma première mission !"
+];
+const cl = document.getElementById('cl');
+let checked = new Set();
+checks.forEach((t, i) => {
+  const d = document.createElement('div');
+  d.className = 'checklist-item';
+  d.innerHTML = '<div class="cb" id="cb-' + i + '"></div><span style="font-size:13px;">' + t + '</span>';
+  d.onclick = () => {
+    const c = document.getElementById('cb-' + i);
+    if (checked.has(i)) {
+      checked.delete(i);
+      c.style.background = 'transparent';
+      c.innerHTML = '';
+      d.style.background = 'transparent';
+    } else {
+      checked.add(i);
+      c.style.background = '#2694ee';
+      c.innerHTML = '<i class="ti ti-check" style="color:white;font-size:13px;"></i>';
+      d.style.background = '#f5f7fa';
+    }
+    const p = Math.round(checked.size / checks.length * 100);
+    document.getElementById('pb').style.width = p + '%';
+    document.getElementById('pt').textContent = checked.size + ' / ' + checks.length + ' étapes complétées';
+  };
+  cl.appendChild(d);
+});
+
+function showSection(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>
